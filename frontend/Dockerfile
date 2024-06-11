@@ -33,7 +33,7 @@
 
 
 # # Stage 1: Build the React application with Vite
-FROM node:14 AS build
+FROM node:18
 
 WORKDIR /app
 
