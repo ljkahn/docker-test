@@ -22,8 +22,10 @@ const resolvers = {
       return { id: user._id, email: user.email, token };
     },
     register: async (parent, { email, password }) => {
+      console.log('Register mutation called with email:', email);
       const existingUser = await User.findOne({ email });
       if (existingUser) {
+        console.log('User already exists:', email);
         throw new Error('User already exists');
       }
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -31,8 +33,14 @@ const resolvers = {
         email,
         password: hashedPassword,
       });
-      await user.save();
-      return user;
+      try {
+        const savedUser = await user.save();
+        console.log('User saved:', savedUser);
+        return { id: savedUser._id, email: savedUser.email };
+      } catch (error) {
+        console.error('Error saving user:', error);
+        throw new Error('Error saving user');
+      }
     },
   },
 };

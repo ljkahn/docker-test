@@ -25,6 +25,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
+    window.location.reload(); // Reload to update the state
   };
 
   return (
@@ -32,10 +33,13 @@ function App() {
       <Menu isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login setIsAuthenticated={setIsAuthenticated} />}
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </Router>
   );

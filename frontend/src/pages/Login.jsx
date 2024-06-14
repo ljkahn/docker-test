@@ -12,25 +12,23 @@ const LOGIN_USER = gql`
   }
 `;
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login] = useMutation(LOGIN_USER);
+  const [login, { error }] = useMutation(LOGIN_USER);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      alert("Please fill in all fields");
-      return;
-    }
     try {
       const response = await login({ variables: { email, password } });
-      localStorage.setItem("token", response.data.login.token);
-      navigate("/");
+      if (response.data) {
+        localStorage.setItem("token", response.data.login.token);
+        setIsAuthenticated(true);
+        navigate("/");
+      }
     } catch (err) {
-      console.error(err);
-      alert("Login failed. Please check your credentials and try again.");
+      console.error("Login error:", err);
     }
   };
 
@@ -51,9 +49,7 @@ const Login = () => {
         required
       />
       <button type="submit">Login</button>
-      <button type="button" onClick={() => navigate("/register")}>
-        Create an Account
-      </button>
+      {error && <p>Error: {error.message}</p>}
     </form>
   );
 };

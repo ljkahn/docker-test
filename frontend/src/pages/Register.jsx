@@ -14,16 +14,21 @@ const REGISTER_USER = gql`
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [register] = useMutation(REGISTER_USER);
+  const [register, { error }] = useMutation(REGISTER_USER);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register({ variables: { email, password } });
-      navigate("/login");
+      console.log("Registering user:", email);
+      const response = await register({ variables: { email, password } });
+      console.log("Registration response:", response);
+      if (response.data) {
+        console.log("Registration successful", response.data);
+        navigate("/login");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Registration error:", err);
     }
   };
 
@@ -44,6 +49,7 @@ const Register = () => {
         required
       />
       <button type="submit">Register</button>
+      {error && <p>Error: {error.message}</p>}
     </form>
   );
 };
